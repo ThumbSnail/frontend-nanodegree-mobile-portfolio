@@ -380,6 +380,7 @@ var pizzaElementGenerator = function(i) {
 
   pizzaImage.src = "images/pizza.png";
   pizzaImage.classList.add("img-responsive");
+  pizzaImage.classList.add("resizeable-pizza");
   pizzaImageContainer.appendChild(pizzaImage);
   pizzaContainer.appendChild(pizzaImageContainer);
 
@@ -421,60 +422,31 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
-  // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
-  function determineDx (elem, size) {
-    var oldwidth = elem.offsetWidth;
-    var windowwidth = document.querySelector("#randomPizzas").offsetWidth;
-    var oldsize = oldwidth / windowwidth;
 
-    // TODO: change to 3 sizes? no more xl?
-    // Changes the slider value to a percent width
-    function sizeSwitcher (size) {
-      switch(size) {
-        case "1":
-          return 0.25;
-        case "2":
-          return 0.3333;
-        case "3":
-          return 0.5;
-        default:
-          console.log("bug in sizeSwitcher");
-      }
+  function getScale(size) {
+    switch(size) {
+      case "1":
+        return 'small';
+      case "2":
+        return 'medium';
+      case "3":
+        return 'large';
+      default:
+        console.log("bug in sizeSwitcher");
     }
-
-    var newsize = sizeSwitcher(size);
-    var dx = (newsize - oldsize) * windowwidth;
-
-    return dx;
   }
 
-  /* KEY CHANGE
-    This has a similar issue to the problem discovered in the scroll function.
-    It's causing forced synchronous layout because it keeps requesting layout
-    information and then changing a style.
-
-    Thus, determineDx will be removed from this loop and called ONCE before the
-    loop executes.
-
-    Furthermore, querySelectorAll is called needlessly (and multiple times) each
-    loop.  This has also been removed from the loop and is called ONCE before the
-    loop executes.
-
-  */
-
-  // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    var allPizzaContainers = document.querySelectorAll(".randomPizzaContainer");
-    var dx = determineDx(allPizzaContainers[0], size);
+    var allPizzaContainers = document.querySelectorAll(".resizeable-pizza");
+    var scale = getScale(size);
 
-    //get all the layout information first
+    //remove any class related to scale
+    //and add back in the appropriate one.
     for (var i = 0; i < allPizzaContainers.length; i++) {
-      allPizzaContainers[i].newWidth = (allPizzaContainers[i].offsetWidth + dx) + 'px';
-    }
-
-    //then batch update the style changes
-    for (var i = 0; i < allPizzaContainers.length; i++) {
-      allPizzaContainers[i].style.width = allPizzaContainers[i].newWidth;
+      allPizzaContainers[i].classList.remove('small');
+      allPizzaContainers[i].classList.remove('medium');
+      allPizzaContainers[i].classList.remove('large');
+      allPizzaContainers[i].classList.add(scale);
     }
   }
 

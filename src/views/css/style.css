@@ -17,6 +17,10 @@ input {
   font-size: 18px;
 }
 
+.resize-bar {
+  margin: 0 0 55px;
+}
+
 form {
   display: inline-block;
 }
@@ -38,6 +42,24 @@ form {
 .randomPizzaContainer {
   float: left;
   display: flex;
+}
+
+.small {
+  -ms-transform: scale(0.69, 0.69);
+  -webkit-transform: scale(0.69, 0.69);
+  transform: scale(0.69, 0.69);
+}
+
+.medium {
+  -ms-transform: scale(1, 1);
+  -webkit-transform: scale(1, 1);
+  transform: scale(1, 1);
+}
+
+.large {
+  -ms-transform: scale(1.61, 1.61);
+  -webkit-transform: scale(1.61, 1.61);
+  transform: scale(1.61, 1.61);
 }
 
 .randomPizzaContainer:after {
