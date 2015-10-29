@@ -6,8 +6,9 @@
 !DON'T! npm install gulp-imagemin --save-dev	//reduce image file size  [!Takes a LONG time to install!]
 					//^Looks like optipng fails to install.  Will have to do pngs by hand.
 	 //^Fails to install, glitchy/unreliable, hardly reduces jpegs.  Do by hand.
-	 npm install gulp-uglify --save-dev
-*/
+	npm install gulp-uglify --save-dev
+	npm install gulp-htmlmin --save-dev
+*/	
 
 var gulp = require('gulp');
 var concat = require('gulp-concat');
@@ -15,6 +16,15 @@ var minifyCss = require('gulp-minify-css');
 var uncss = require('gulp-uncss');
 //var imagemin = require('gulp-imagemin');
 var uglify = require('gulp-uglify');
+var htmlmin = require('gulp-htmlmin');
+
+//Minify HTML
+gulp.task('miniHTML', function() {
+  return gulp.src('dist/index.html')
+    .pipe(htmlmin({collapseWhitespace: true}))
+    .pipe(gulp.dest('dist'))
+});
+
 
 //Concatenate CSS files
 gulp.task('concatCSS', function() {
@@ -23,9 +33,16 @@ gulp.task('concatCSS', function() {
 		.pipe(gulp.dest('dist/css'));
 });
 
+/*
 //Minify CSS
 gulp.task('miniCSS', ['concatCSS'], function() {  //['concatCSS'] means it depends on that function, so wait for it to finish
   return gulp.src('dist/css/*.css')					//...Does this mean, though, that I should ONLY run miniCSS?  Ie, will it call the other one?
+    .pipe(minifyCss())
+    .pipe(gulp.dest('dist/css'));
+});*/
+
+gulp.task('miniCSS', function() {  
+  return gulp.src('dist/css/*.css')
     .pipe(minifyCss())
     .pipe(gulp.dest('dist/css'));
 });
@@ -43,9 +60,9 @@ gulp.task('unCSS', function() {
 
 //Minify JS
 gulp.task('miniJS', function() {
-  return gulp.src('js/*.js')
+  return gulp.src('dist/js/*.js')
     .pipe(uglify())
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest('dist/js'));
 });
 
 
