@@ -1,73 +1,90 @@
-## Website Performance Optimization portfolio project
+## Website Performance Optimization Portfolio Project
 
-Your challenge, if you wish to accept it (and we sure hope you will), is to optimize this online portfolio for speed! In particular, optimize the critical rendering path and make this page render as quickly as possible by applying the techniques you've picked up in the [Critical Rendering Path course](https://www.udacity.com/course/ud884).
+A.  How to Run/Download
 
-To get started, check out the repository, inspect the code,
+	1.  Visit these links in Chrome (easiest)
+		[index.html](http://thumbsnail.github.io/frontend-nanodegree-mobile-portfolio)
+		[pizza.html](http://thumbsnail.github.io/frontend-nanodegree-mobile-portfolio/views/pizza.html)
 
-### Getting started
+	2.  Download the project's .zip file
+		[master.zip](https://github.com/ThumbSnail/frontend-nanodegree-mobile-portfolio/archive/master.zip)
+		Then open dist/index.html and dist/views/pizza.html for the production files
+		Or open src/index.html and src/views/pizza.html for the source files (which include comments)
 
-####Part 1: Optimize PageSpeed Insights score for index.html
+	3.  Clone the repository
+		git clone https://github.com/ThumbSnail/frontend-nanodegree-mobile-portfolio.git
+		Then open dist/index.html and dist/views/pizza.html for the production files
+		Or open src/index.html and src/views/pizza.html for the source files (which include comments)
 
-Some useful tips to help you get started:
+B.  Optimizations made to index.html
 
-1. Check out the repository
-1. To inspect the site on your phone, you can run a local server
+	1.  Reduced the number of critical resources and the critical path length
+		-Added a media query to the <link> for print.css
+		-Changed analytics.js <script> to async
+		-Inlined the style.css file into index.html
+		-Removed the unnecessary Google font since a standard font would suffice
 
-  ```bash
-  $> cd /path/to/your-project-folder
-  $> python -m SimpleHTTPServer 8080
-  ```
+	2.  Reduced the number of critical bytes
+		-Learned how to use Gulp (and various plugins) to minify the HTML, CSS, and JS for distribution
+		-Reduced the size (and quality) of the large pizzeria image.  Also removed its metadata
+		-Reduced the size of the profile pic
 
-1. Open a browser and visit localhost:8080
-1. Download and install [ngrok](https://ngrok.com/) to make your local server accessible remotely.
+C.  Optimizations made to views/js/main.js
 
-  ``` bash
-  $> cd /path/to/your-project-folder
-  $> ngrok 8080
-  ```
+	1.  Scrolling pizzas
 
-1. Copy the public URL ngrok gives you and try running it through PageSpeed Insights! Optional: [More on integrating ngrok, Grunt and PageSpeed.](http://www.jamescryer.com/2014/06/12/grunt-pagespeed-and-ngrok-locally-testing/)
+		In updatePositions(), document.body.scrollTop was originally being accessed inside of a loop
+		before setting a style change.  This was causing forced synchronous layout on every iteration.
+		A single request for scrollTop was moved outside of the loop, and then all the style changes
+		were batched.
 
-Profile, optimize, measure... and then lather, rinse, and repeat. Good luck!
+		This function was also querySelectorAll-ing for all of the moving pizzas every time the user
+		scrolled.  Now, when the moving pizzas are first created, they are stored in a global array.
+		updatePositions() accesses this array and avoids the querySelectorAll call.
 
-####Part 2: Optimize Frames per Second in pizza.html
+		This code was originally creating 200 pizzas to move in the background as the user scrolled.
+		However, since the user can't even see all of those at any given time, this number was
+		reduced to a far more manageable 20.
 
-To optimize views/pizza.html, you will need to modify views/js/main.js until your frames per second rate is 60 fps or higher. You will find instructive comments in main.js. 
+		Finally, the CSS was edited to tell the browser to place each moveable pizza onto its own
+		layer through the use of will-change: transform and transform: translateZ(0).  This helps to
+		cut down on expensive paints.
 
-You might find the FPS Counter/HUD Display useful in Chrome developer tools described here: [Chrome Dev Tools tips-and-tricks](https://developer.chrome.com/devtools/docs/tips-and-tricks).
+	2.  Resizing pizzas
 
-### Optimization Tips and Tricks
-* [Optimizing Performance](https://developers.google.com/web/fundamentals/performance/ "web performance")
-* [Analyzing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/analyzing-crp.html "analyzing crp")
-* [Optimizing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/optimizing-critical-rendering-path.html "optimize the crp!")
-* [Avoiding Rendering Blocking CSS](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css.html "render blocking css")
-* [Optimizing JavaScript](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript.html "javascript")
-* [Measuring with Navigation Timing](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/measure-crp.html "nav timing api"). We didn't cover the Navigation Timing API in the first two lessons but it's an incredibly useful tool for automated page profiling. I highly recommend reading.
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads.html">The fewer the downloads, the better</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer.html">Reduce the size of text</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization.html">Optimize images</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching.html">HTTP caching</a>
+		The resizePizzas() function originally had a problem that was similar to what was plaguing the
+		scrolling pizzas:  forced synchronous layout was occurring inside a for loop.  querySelectorAll 
+		was also being called multiple times and even inside the for loop.  Furthermore, the approach to
+		resize the pizzas seemed unnecessarily complex, so I completely changed it.
 
-### Customization with Bootstrap
-The portfolio was built on Twitter's <a href="http://getbootstrap.com/">Bootstrap</a> framework. All custom styles are in `dist/css/portfolio.css` in the portfolio repo.
+		Resizing the pizzas is now done by scaling the images with CSS.  The determineDx() function was
+		replaced with a getScale() function.  This returns the class name that will be assigned to the
+		resizeable pizzas (small, medium, large).  Each of these classes has a different transform: 
+		scale property attached to it.
 
-* <a href="http://getbootstrap.com/css/">Bootstrap's CSS Classes</a>
-* <a href="http://getbootstrap.com/components/">Bootstrap's Components</a>
+		What changePizzaSizes() does now is first remove any class related to scale that may have been
+		on the resizeable pizzas.  It then adds to them the class returned from getScale.  For example,
+		say that the pizzas were large and the user clicked the resize bar to make them small.  The 
+		'large' class is removed from all the pizzas and replaced with 'small'.
 
-### Sample Portfolios
+	3.  File sizes
+		-Used Gulp (and a plugin) to minify the JS, thereby shrinking the file size
+		-(Also, for pizza.html, unCSS'd the Bootstrap CSS and minified the CSS.)
+		-(Also, reduced the pizzeria.jpg file)
 
-Feeling uninspired by the portfolio? Here's a list of cool portfolios I found after a few minutes of Googling.
+D.  Notes on Task Runners
 
-* <a href="http://www.reddit.com/r/webdev/comments/280qkr/would_anybody_like_to_post_their_portfolio_site/">A great discussion about portfolios on reddit</a>
-* <a href="http://ianlunn.co.uk/">http://ianlunn.co.uk/</a>
-* <a href="http://www.adhamdannaway.com/portfolio">http://www.adhamdannaway.com/portfolio</a>
-* <a href="http://www.timboelaars.nl/">http://www.timboelaars.nl/</a>
-* <a href="http://futoryan.prosite.com/">http://futoryan.prosite.com/</a>
-* <a href="http://playonpixels.prosite.com/21591/projects">http://playonpixels.prosite.com/21591/projects</a>
-* <a href="http://colintrenter.prosite.com/">http://colintrenter.prosite.com/</a>
-* <a href="http://calebmorris.prosite.com/">http://calebmorris.prosite.com/</a>
-* <a href="http://www.cullywright.com/">http://www.cullywright.com/</a>
-* <a href="http://yourjustlucky.com/">http://yourjustlucky.com/</a>
-* <a href="http://nicoledominguez.com/portfolio/">http://nicoledominguez.com/portfolio/</a>
-* <a href="http://www.roxannecook.com/">http://www.roxannecook.com/</a>
-* <a href="http://www.84colors.com/portfolio.html">http://www.84colors.com/portfolio.html</a>
+	1.  Research
+
+		I looked at Grunt, Gulp, and npm itself as build tools.  I ended up going with Gulp because,
+		since it's in JavaScript, I found it the easiest to read and organize.
+
+	2.  Plugins I used
+
+		Image reducers:
+		Attempted to use gulp-imagemin but was unable to get it to install and work on Windows.
+		(Appears to be an issue with file path lengths being longer than what Windows can handle.)
+		Instead, used www.jpeg-optimizer.com
+
+		Minifiers:
+		gulp-htmlmin, gulp-minify-css, gulp-uglify, gulp-uncss

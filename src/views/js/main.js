@@ -400,6 +400,8 @@ var pizzaElementGenerator = function(i) {
 };
 
 // resizePizzas(size) is called when the slider in the "Our Pizzas" section of the website moves.
+// Assigns a class to each resizeable pizza that has a different scale applied to it in the CSS,
+// small, medium, and large
 var resizePizzas = function(size) { 
   window.performance.mark("mark_start_resize");   // User Timing API function
 
@@ -497,9 +499,6 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
   console.log("Average time to generate last 10 frames: " + sum / 10 + "ms");
 }
 
-// The following code for sliding background pizzas was pulled from Ilya's demo found at:
-// https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
-// Moves the sliding background pizzas based on scroll position
 
 /* !KEY CHANGE FROM ORIGINAL!
  * Rather than requerying every call to updatePositions() for all the
@@ -507,6 +506,9 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 */
 var arrScrollingPizzas = [];
 
+// The following code for sliding background pizzas was pulled from Ilya's demo found at:
+// https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
+// Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
