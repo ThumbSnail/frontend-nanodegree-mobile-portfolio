@@ -3,11 +3,11 @@
 A.  How to Run/Download
 
 	1.  Visit these links in Chrome (easiest)
-		<a href="http://thumbsnail.github.io/frontend-nanodegree-mobile-portfolio">index.html</a>
-		< a href="http://thumbsnail.github.io/frontend-nanodegree-mobile-portfolio/views/pizza.html">pizza.html</a>
+		index.html: http://thumbsnail.github.io/frontend-nanodegree-mobile-portfolio
+		pizza.html: http://thumbsnail.github.io/frontend-nanodegree-mobile-portfolio/views/pizza.html
 
 	2.  Download the project's .zip file
-		<a href="https://github.com/ThumbSnail/frontend-nanodegree-mobile-portfolio/archive/master.zip">master.zip</a>
+		https://github.com/ThumbSnail/frontend-nanodegree-mobile-portfolio/archive/master.zip
 		Then open dist/index.html and dist/views/pizza.html for the production files
 		Or open src/index.html and src/views/pizza.html for the source files
 		(which include comments)
