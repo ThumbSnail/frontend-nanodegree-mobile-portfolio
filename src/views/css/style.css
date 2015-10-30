@@ -33,10 +33,18 @@ form {
   font-weight: 800;
 }
 
+/*
+ * !KEY CHANGE!
+ * Used will-change: transform
+ * tostick each moveable pizza on its own layer
+*/
+
 .mover {
   position: fixed;
   width: 256px;
   z-index: -1;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .randomPizzaContainer {
@@ -45,7 +53,7 @@ form {
 }
 
 /* 
- *
+ * !KEY CHANGE!
  * Added classes for different pizza sizes. Used for scaling.
  *
 */

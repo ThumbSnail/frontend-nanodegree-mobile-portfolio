@@ -499,8 +499,14 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
-
 // Moves the sliding background pizzas based on scroll position
+
+/* !KEY CHANGE FROM ORIGINAL!
+ * Rather than requerying every call to updatePositions() for all the
+ * moveable pizzas, just store them in a global array once:
+*/
+var arrScrollingPizzas = [];
+
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
@@ -512,12 +518,10 @@ function updatePositions() {
    * Now the layout info is requested ONCE outside of the loop, and now all the style
    * changes are batched.
   */
-  var scrollTop = document.body.scrollTop / 1250;
-
-  var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
+  var scrollTop = document.body.scrollTop / 1250;  
+  for (var i = 0; i < arrScrollingPizzas.length; i++) {
     var phase = Math.sin(scrollTop + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+    arrScrollingPizzas[i].style.left = arrScrollingPizzas[i].basicLeft + 100 * phase + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -534,10 +538,15 @@ function updatePositions() {
 window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
+/* !KEY CHANGE FROM THE ORIGINAL!
+ * This used to create 200 pizzas that danced around in the background
+ * However, the most you could ever see at one time was far, far less
+ * than that.  Thus, this now only produces 20 pizzas.
+*/
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
+  for (var i = 0; i < 20; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
@@ -546,6 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
+    arrScrollingPizzas.push(elem);  // !! Now storing these moveable pizzas in a global array
   }
   updatePositions();
 });
