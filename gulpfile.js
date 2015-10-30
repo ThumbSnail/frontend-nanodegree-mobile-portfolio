@@ -42,9 +42,9 @@ gulp.task('miniCSS', ['concatCSS'], function() {  //['concatCSS'] means it depen
 });*/
 
 gulp.task('miniCSS', function() {  
-  return gulp.src('dist/css/*.css')
+  return gulp.src('dist/views/css/*.css')
     .pipe(minifyCss())
-    .pipe(gulp.dest('dist/css'));
+    .pipe(gulp.dest('dist/views/css'));
 });
 
 //UnCSS
@@ -60,9 +60,9 @@ gulp.task('unCSS', function() {
 
 //Minify JS
 gulp.task('miniJS', function() {
-  return gulp.src('dist/js/*.js')
+  return gulp.src('dist/views/js/*.js')
     .pipe(uglify())
-    .pipe(gulp.dest('dist/js'));
+    .pipe(gulp.dest('dist/views/js'));
 });
 
 
