@@ -44,6 +44,12 @@ form {
   display: flex;
 }
 
+/* 
+ *
+ * Added classes for different pizza sizes. Used for scaling.
+ *
+*/
+
 .small {
   -ms-transform: scale(0.69, 0.69);
   -webkit-transform: scale(0.69, 0.69);
@@ -61,6 +67,12 @@ form {
   -webkit-transform: scale(1.61, 1.61);
   transform: scale(1.61, 1.61);
 }
+
+/*  Using layers didn't seem to have any positive effect on speed
+.resizeable-pizza {
+  transform: translateZ(0);
+  will-change: transform;
+}*/
 
 .randomPizzaContainer:after {
   content: "";

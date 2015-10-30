@@ -422,6 +422,12 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
+  /* !KEY CHANGE FROM THE ORIGINAL!
+   * getScale, based on the position of the resize slider,
+   * returns the appropriate CSS class that will be added to (and
+   * used to scale) the resizeable pizzas
+   *
+  */
 
   function getScale(size) {
     switch(size) {
@@ -436,12 +442,16 @@ var resizePizzas = function(size) {
     }
   }
 
+  /* !KEY CHANGE FROM THE ORIGINAL!
+   * changePizzaSizes first removes any CSS class related to scaling the size
+   * of a pizza.  It then adds the appropriate CSS class (based on the position
+   * of the resize slider) to correctly scale every resizeable pizza.
+  */
+
   function changePizzaSizes(size) {
     var allPizzaContainers = document.querySelectorAll(".resizeable-pizza");
     var scale = getScale(size);
 
-    //remove any class related to scale
-    //and add back in the appropriate one.
     for (var i = 0; i < allPizzaContainers.length; i++) {
       allPizzaContainers[i].classList.remove('small');
       allPizzaContainers[i].classList.remove('medium');
@@ -449,17 +459,6 @@ var resizePizzas = function(size) {
       allPizzaContainers[i].classList.add(scale);
     }
   }
-
-  /* Original Code
-      // Iterates through pizza elements on the page and changes their widths
-    function changePizzaSizes(size) {
-      for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-        var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-        var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-        document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
-      }
-    }
-  */
 
   changePizzaSizes(size);
 
@@ -506,13 +505,12 @@ function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  /* KEY CHANGE:
-    document.body.scrollTop was originally inside the loop.  This means that forced
-    synchronous layout was occuring each and every cycle of the loop since it would
-    request layout information and then change a style.  Thus, the next request for
-    the layout information would cause layout to run again, and on and on and on.
-    Now the layout info is requested ONCE outside of the loop, and now all the style
-    changes are batched.
+  /* !KEY CHANGE FROM THE ORIGINAL!:
+   * document.body.scrollTop was originally inside the loop.  This means that forced
+   * synchronous layout was occuring each and every cycle of the loop since it would
+   * request layout information and then change a style and then repeat.
+   * Now the layout info is requested ONCE outside of the loop, and now all the style
+   * changes are batched.
   */
   var scrollTop = document.body.scrollTop / 1250;
 
