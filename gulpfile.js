@@ -44,7 +44,7 @@ gulp.task('miniCSS', ['concatCSS'], function() {  //['concatCSS'] means it depen
 });*/
 
 gulp.task('miniCSS', function() {  
-  return gulp.src('dist/views/css/*.css')
+  return gulp.src('dist/views/css/style.css')
     .pipe(minifyCss())
     .pipe(gulp.dest('dist/views/css'));
 });

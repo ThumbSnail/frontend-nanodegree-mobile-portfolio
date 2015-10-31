@@ -40,12 +40,15 @@ form {
   position: fixed;
   width: 256px;
   z-index: -1;
+  -webkit-transform: translateZ(0);
   transform: translateZ(0);
   will-change: transform;
 }
 
 .randomPizzaContainer {
   float: left;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
 }
 
