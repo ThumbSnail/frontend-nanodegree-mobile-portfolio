@@ -47,9 +47,11 @@ C.  Optimizations made to views/js/main.js
 		they are stored in a global array. updatePositions() accesses this array and
 		avoids the querySelectorAll call.
 
+		Also, a querySelector() has been replaced with the faster getElementById().
+
 		This code was originally creating 200 pizzas to move in the background as
 		the user scrolled. However, since the user can't even see all of those at any
-		given time, this number was	reduced to a far more manageable 20.
+		given time, this number was	reduced to 48.
 
 		Finally, the CSS was edited to tell the browser to place each moveable pizza
 		onto its own layer through the use of will-change: transform and transform:
@@ -57,23 +59,24 @@ C.  Optimizations made to views/js/main.js
 
 	2.  Resizing pizzas
 
-		The resizePizzas() function originally had a problem that was similar to what
-		was plaguing the scrolling pizzas:  forced synchronous layout was occurring
-		inside a for loop.  querySelectorAll was also being called multiple times and
-		even inside the for loop.  Furthermore, the approach to	resize the pizzas
-		seemed unnecessarily complex, so I completely changed it.
+		changePizzaSizes() was doing a lot of unnecessary work.  It was making several
+		calls to querySelectorAll inside of a for loop.  These have been replaced with
+		a single call outside the loop, and it has been changed to the faster 
+		getElementsByClassName().
 
-		Resizing the pizzas is now done by scaling the images with CSS.  The
-		determineDx() function was replaced with a getScale() function.  This returns
-		the class name that will be assigned to the	resizeable pizzas (small, medium,
-		large).  Each of these classes has a different transform: scale property
-		attached to it.
+		The original loop was requesting a bunch of layout information and then making
+		style changes, once again causing forced synchronous layout.  It has now been
+		split into two separate for loops.  The first batches all of the layout
+		property read requests and saves the newly calculated values.  The second loop
+		then batches all of the style changes.
 
-		What changePizzaSizes() does now is first remove any class related to scale
-		that may have been on the resizeable pizzas.  It then adds to them the class
-		returned from getScale.  For example, say that the pizzas were large and the
-		user clicked the resize bar to make them small.  The 'large' class is removed
-		from all the pizzas and replaced with 'small'.
+		Furthermore, determineDx() has been changed to not recalculate values that are
+		going to be the same for each element.  Since all of the pizzas will be changed
+		to the same size, sizeSwitcher() was moved outside of this function and only
+		called once to receive the value for the new size.  Requesting the windowwidth
+		was also moved outstide so that it's only done once.
+
+		Also, any querySelector() was replaced with the faster getElementById().
 
 	3.  File sizes
 		-Used Gulp (and a plugin) to minify the JS, thereby shrinking the file size
@@ -97,3 +100,6 @@ D.  Notes on Task Runners
 
 		Minifiers:
 		gulp-htmlmin, gulp-minify-css, gulp-uglify, gulp-uncss
+
+		Autoprefixer:
+		gulp-autoprefixer

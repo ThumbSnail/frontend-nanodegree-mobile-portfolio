@@ -8,6 +8,7 @@
 	 //^Fails to install, glitchy/unreliable, hardly reduces jpegs.  Do by hand.
 	npm install gulp-uglify --save-dev
 	npm install gulp-htmlmin --save-dev
+  npm install gulp-autoprefixer --save-dev 
 */	
 
 var gulp = require('gulp');
@@ -17,6 +18,7 @@ var uncss = require('gulp-uncss');
 //var imagemin = require('gulp-imagemin');
 var uglify = require('gulp-uglify');
 var htmlmin = require('gulp-htmlmin');
+var autoprefixer = require('gulp-autoprefixer');
 
 //Minify HTML
 gulp.task('miniHTML', function() {
@@ -65,6 +67,15 @@ gulp.task('miniJS', function() {
     .pipe(gulp.dest('dist/views/js'));
 });
 
+//Autoprefix
+gulp.task('autoP', function () {
+    return gulp.src('src/views/css/style.css')
+        .pipe(autoprefixer({
+            browsers: ['last 2 versions'],
+            cascade: false
+        }))
+        .pipe(gulp.dest('src/views/css'));
+});
 
 //Reduce image file sizes
 //gulp.task('miniImage', function() {	//wow, sure doesn't reduce it by much...  (and this thing is glitchy...)
