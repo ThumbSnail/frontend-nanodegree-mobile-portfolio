@@ -380,7 +380,6 @@ var pizzaElementGenerator = function(i) {
 
   pizzaImage.src = "images/pizza.png";
   pizzaImage.classList.add("img-responsive");
-  pizzaImage.classList.add("resizeable-pizza");
   pizzaImageContainer.appendChild(pizzaImage);
   pizzaContainer.appendChild(pizzaImageContainer);
 
@@ -400,8 +399,6 @@ var pizzaElementGenerator = function(i) {
 };
 
 // resizePizzas(size) is called when the slider in the "Our Pizzas" section of the website moves.
-// Assigns a class to each resizeable pizza that has a different scale applied to it in the CSS,
-// small, medium, and large
 var resizePizzas = function(size) { 
   window.performance.mark("mark_start_resize");   // User Timing API function
 
@@ -424,41 +421,39 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
-  /* !KEY CHANGE FROM THE ORIGINAL!
-   * getScale, based on the position of the resize slider,
-   * returns the appropriate CSS class that will be added to (and
-   * used to scale) the resizeable pizzas
-   *
-  */
+  // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
+  function determineDx (elem, size) {
+    var oldwidth = elem.offsetWidth;
+    var windowwidth = document.querySelector("#randomPizzas").offsetWidth;
+    var oldsize = oldwidth / windowwidth;
 
-  function getScale(size) {
-    switch(size) {
-      case "1":
-        return 'small';
-      case "2":
-        return 'medium';
-      case "3":
-        return 'large';
-      default:
-        console.log("bug in sizeSwitcher");
+    // TODO: change to 3 sizes? no more xl?
+    // Changes the slider value to a percent width
+    function sizeSwitcher (size) {
+      switch(size) {
+        case "1":
+          return 0.25;
+        case "2":
+          return 0.3333;
+        case "3":
+          return 0.5;
+        default:
+          console.log("bug in sizeSwitcher");
+      }
     }
+
+    var newsize = sizeSwitcher(size);
+    var dx = (newsize - oldsize) * windowwidth;
+
+    return dx;
   }
 
-  /* !KEY CHANGE FROM THE ORIGINAL!
-   * changePizzaSizes first removes any CSS class related to scaling the size
-   * of a pizza.  It then adds the appropriate CSS class (based on the position
-   * of the resize slider) to correctly scale every resizeable pizza.
-  */
-
+  // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
-    var allPizzaContainers = document.querySelectorAll(".resizeable-pizza");
-    var scale = getScale(size);
-
-    for (var i = 0; i < allPizzaContainers.length; i++) {
-      allPizzaContainers[i].classList.remove('small');
-      allPizzaContainers[i].classList.remove('medium');
-      allPizzaContainers[i].classList.remove('large');
-      allPizzaContainers[i].classList.add(scale);
+    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
+      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
+      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
+      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
     }
   }
 
@@ -499,31 +494,18 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
   console.log("Average time to generate last 10 frames: " + sum / 10 + "ms");
 }
 
-
-/* !KEY CHANGE FROM ORIGINAL!
- * Rather than requerying every call to updatePositions() for all the
- * moveable pizzas, just store them in a global array once:
-*/
-var arrScrollingPizzas = [];
-
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
+
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
-  /* !KEY CHANGE FROM THE ORIGINAL!:
-   * document.body.scrollTop was originally inside the loop.  This means that forced
-   * synchronous layout was occuring each and every cycle of the loop since it would
-   * request layout information and then change a style and then repeat.
-   * Now the layout info is requested ONCE outside of the loop, and now all the style
-   * changes are batched.
-  */
-  var scrollTop = document.body.scrollTop / 1250;  
-  for (var i = 0; i < arrScrollingPizzas.length; i++) {
-    var phase = Math.sin(scrollTop + (i % 5));
-    arrScrollingPizzas[i].style.left = arrScrollingPizzas[i].basicLeft + 100 * phase + 'px';
+  var items = document.querySelectorAll('.mover');
+  for (var i = 0; i < items.length; i++) {
+    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -540,15 +522,10 @@ function updatePositions() {
 window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
-/* !KEY CHANGE FROM THE ORIGINAL!
- * This used to create 200 pizzas that danced around in the background
- * However, the most you could ever see at one time was far, far less
- * than that.  Thus, this now only produces 20 pizzas.
-*/
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 20; i++) {
+  for (var i = 0; i < 200; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
@@ -557,7 +534,6 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
-    arrScrollingPizzas.push(elem);  // !! Now storing these moveable pizzas in a global array
   }
   updatePositions();
 });
